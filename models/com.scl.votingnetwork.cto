@@ -1,0 +1,42 @@
+namespace com.scl.votingnetwork
+
+participant Personnel identified by personnelId {
+  o String personnelId
+  o String fullName optional
+}
+
+asset Day identified by date {
+  o String date
+  o Integer[] options
+  o String description optional
+  o Vote[] votes optional
+}
+
+asset VoteCount identified by date {
+  o String date 
+  o Integer[] count
+}
+
+concept Vote {
+  o Integer vote
+  --> Personnel voter
+}
+
+transaction MakeVote {
+  o Vote vote
+  --> Day day
+}
+
+transaction DeleteAllVotes {
+  --> Day day 
+}
+
+transaction CountingVotes {
+  --> Day day
+}
+
+transaction SetupDemo {
+  o String date
+  o Integer personnelsNumber
+  o Integer optionsNumber
+}
