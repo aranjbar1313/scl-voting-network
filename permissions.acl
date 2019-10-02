@@ -1,0 +1,62 @@
+/**
+ * Access control rules for voting-network
+ */
+
+rule R1a_PersonnelSeeUpdateThemselvesOnly {
+  description: "Personnel can see and update their own record only"
+  participant(t): "com.scl.votingnetwork.Personnel"
+  operation: READ, UPDATE
+  resource(v): "com.scl.votingnetwork.Personnel"
+  condition: (v.getIdentifier() == t.getIdentifier())
+  action: ALLOW
+}
+
+rule R1b_PersonnelSeeTheirVotes {
+  description: "Personnel can see/work with their own Votes"
+  participant(t): "com.scl.votingnetwork.Personnel"
+  operation: ALL
+  resource(c): "com.scl.votingnetwork.Vote"
+  condition: (c.voter.getIdentifier() == t.getIdentifier())
+  action: ALLOW
+}
+
+rule R2_EnableMakeVoteTxn {
+  description: "Enable Personnels to submit the MakeVote transaction"
+  participant: "com.scl.votingnetwork.Personnel"
+  operation: ALL
+  resource: "com.scl.votingnetwork.MakeVote"
+  action: ALLOW
+}
+
+rule R3_PersonnelsSeeOwnHistoryOnly {
+  description: "Personnels should be able to see the history of their own transactions only"
+  participant(t): "com.scl.votingnetwork.Personnel"
+  operation: READ
+  resource(v): "org.hyperledger.composer.system.HistorianRecord"
+  condition: (v.participantInvoking.getIdentifier() != t.getIdentifier())
+  action: DENY
+}
+
+rule SystemACL {
+  description:  "System ACL to permit all access"
+  participant: "org.hyperledger.composer.system.Participant"
+  operation: ALL
+  resource: "org.hyperledger.composer.system.**"
+  action: ALLOW
+}
+
+rule NetworkAdminUser {
+    description: "Grant business network administrators full access to user resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "**"
+    action: ALLOW
+}
+
+rule NetworkAdminSystem {
+    description: "Grant business network administrators full access to system resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "org.hyperledger.composer.system.**"
+    action: ALLOW
+}
